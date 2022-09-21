@@ -32,8 +32,8 @@ public class PessoaDAO {
         this.conn = new ConexaoFactory().connectDB();
     }
 
-    public void inserir(Pessoa pessoa) throws SQLException {
-        String sqlCommand = "INSERT INTO PESSOAS (cpf, nome, sobrenome, email, genero, senha, tipo) values (?, ?, ?, ?, ?, ?, ?);";
+    public void inserir(Pessoa pessoa) {
+        String sqlCommand = "INSERT INTO PESSOAS (cpf, nome, sobrenome, email, genero, senha, tipo) values (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstm = conn.prepareStatement(sqlCommand)) {
             pstm.setString(1, pessoa.getCPF());
             pstm.setString(2, pessoa.getNome());
@@ -41,7 +41,7 @@ public class PessoaDAO {
             pstm.setString(4, pessoa.getEmail());
             pstm.setInt(5, pessoa.getGenero().ordinal());
             pstm.setString(6, pessoa.getSenha());
-            pstm.setInt(7, (pessoa instanceof Autor) ? 1 : (pessoa instanceof Revisor) ? 2 : 3);
+            pstm.setInt(7, ((pessoa instanceof Autor) ? 1 : (pessoa instanceof Revisor) ? 2 : 3));
             try {
                 pstm.execute();
             } catch (Exception e) {
@@ -57,11 +57,21 @@ public class PessoaDAO {
         listaPessoas.remove(pessoa);
     }
 
-    public Pessoa selecionarPorCPF(String CPF) {
-        for (Pessoa pessoa : listaPessoas) {
-            if (pessoa.getCPF().equals(CPF)) return pessoa;
+    public Pessoa selecionarPorCPF(String cpf) {
+        String sqlCommand = "select * from pessoas where cpf = ?";
+        try (PreparedStatement pstm = conn.prepareStatement(sqlCommand)) {
+            pstm.setString(1, cpf);
+            try (ResultSet resultSet = pstm.executeQuery()) {
+                if (resultSet.next()) {
+                    return extrairObjeto(resultSet);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Erro na execução do comando SQL");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na preparação do comando SQL");
         }
-        throw new RuntimeException("CPF não encontrado!");
+        throw new RuntimeException("Algo deu ruim");
     }
 
     public Pessoa selecionarPorEmail(String email) {
@@ -73,7 +83,7 @@ public class PessoaDAO {
                     return extrairObjeto(resultSet);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Erro na execução do comando SQ");
+                throw new RuntimeException("Erro na execução do comando SQL");
             }
         } catch (Exception e) {
             throw new RuntimeException("Erro na preparação do comando SQL");

@@ -6,10 +6,10 @@ public class GeneroFactory {
 
     public Genero getGenero(Integer ordinal) {
         switch (ordinal) {
-            case 1 -> {
+            case 0 -> {
                 return Genero.MASCULINO;
             }
-            case 2 -> {
+            case 1 -> {
                 return Genero.FEMININO;
             }
             default -> {

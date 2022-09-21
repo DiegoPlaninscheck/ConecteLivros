@@ -4,6 +4,7 @@ import br.senai.sc.livros.controller.PessoaController;
 import br.senai.sc.livros.model.entities.Genero;
 
 import javax.swing.*;
+import java.sql.SQLException;
 
 public class CadastroPessoa extends JFrame {
     private JButton voltarButton;
@@ -43,7 +44,7 @@ public class CadastroPessoa extends JFrame {
                         dispose();
                         voltar();
                     }
-                } catch (RuntimeException err) {
+                } catch (RuntimeException | SQLException err) {
                     JOptionPane.showMessageDialog(null, err.getMessage());
                 }
             }

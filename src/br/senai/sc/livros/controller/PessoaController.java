@@ -5,6 +5,7 @@ import br.senai.sc.livros.model.entities.Pessoa;
 import br.senai.sc.livros.model.service.PessoaService;
 
 import javax.swing.*;
+import java.sql.SQLException;
 
 public class PessoaController {
     Pessoa model;
@@ -15,7 +16,7 @@ public class PessoaController {
         return model.validaLogin(senha);
     }
 
-    public void cadastrar(String nome, String sobrenome, String email, Object genero, String senha, String cpf, String confSenha) {
+    public void cadastrar(String nome, String sobrenome, String email, Object genero, String senha, String cpf, String confSenha) throws SQLException {
         PessoaService service = new PessoaService();
         Pessoa pessoa = Pessoa.cadastrar(nome, sobrenome, email, (Genero)genero, senha, cpf, confSenha);
         service.inserir(pessoa);
