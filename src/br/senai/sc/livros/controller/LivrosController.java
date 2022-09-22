@@ -21,8 +21,8 @@ public class LivrosController {
         model.setAutor(autor);
     }
 
-    public boolean cadastrar(String titulo, String isbn, String qtdPag, Pessoa autor){
-       return new LivroService().inserir(Livro.cadastrar(titulo, Integer.parseInt(isbn), Integer.parseInt(qtdPag), (Autor)autor));
+    public void cadastrar(String titulo, String isbn, String qtdPag, Pessoa autor){
+        new LivroService().inserir(Livro.cadastrar(titulo, Integer.parseInt(isbn), Integer.parseInt(qtdPag), (Autor)autor));
     }
 
     public Collection<Livro> getAllLivros(){

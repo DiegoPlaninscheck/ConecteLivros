@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class CadastroLivro extends JFrame implements ActionListener{
+public class CadastroLivro extends JFrame implements ActionListener {
     private JButton voltarButton;
     private JButton cadastrarButton;
     private JTextField tituloInput;
@@ -20,6 +20,7 @@ public class CadastroLivro extends JFrame implements ActionListener{
 
     private static Pessoa usuario;
     private static Livro livro;
+
     CadastroLivro(Pessoa pessoa, Livro livrozada) {
         usuario = pessoa;
         livro = livrozada;
@@ -43,12 +44,12 @@ public class CadastroLivro extends JFrame implements ActionListener{
         voltarButton.addActionListener((ActionListener) this);
         voltarButton.setActionCommand("voltarButton");
 
-        if(usuario instanceof Autor){
+        if (usuario instanceof Autor) {
             confirmarButton.setVisible(false);
             opcoesStatus.setVisible(false);
             labelStatus.setVisible(false);
         }
-        if(usuario instanceof Revisor || usuario instanceof Diretor){
+        if (usuario instanceof Revisor || usuario instanceof Diretor) {
             cadastrarButton.setVisible(false);
             tituloInput.setEnabled(false);
             isbnInput.setEnabled(false);
@@ -62,29 +63,29 @@ public class CadastroLivro extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         LivrosController livrosController = new LivrosController();
-        switch (e.getActionCommand()){
+        switch (e.getActionCommand()) {
             case "cadastrarButton" -> {
                 String titulo = tituloInput.getText();
                 String isbn = isbnInput.getText();
                 String qtdPag = qtdPagInput.getText();
-                if(titulo.isEmpty() ||
+                if (titulo.isEmpty() ||
                         isbn.isEmpty() ||
-                        qtdPag.isEmpty() ){
+                        qtdPag.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Há campos vazios!");
                 } else {
-                    if(livrosController.cadastrar(titulo, isbn, qtdPag, usuario)){
+                    try {
+                        livrosController.cadastrar(titulo, isbn, qtdPag, usuario);
                         JOptionPane.showMessageDialog(null, "Livro cadastrado com sucesso!");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "ISBN já cadastrado!");
-                    };
-
+                    } catch (Exception exception) {
+                        throw new RuntimeException("Livro já cadastrado");
+                    }
                     dispose();
                     new Menu(Menu.getUsuario());
                 }
             }
             case "confirmarButton" -> {
                 livrosController.atualizarStatus(livro, Status.getStatusCorreto(String.valueOf(opcoesStatus.getSelectedItem())));
-                if(usuario instanceof Revisor){
+                if (usuario instanceof Revisor) {
                     livrosController.adicionarRevisor(livro, usuario);
                     JOptionPane.showMessageDialog(null, "Livro revisado com sucesso!");
                 } else {
@@ -102,7 +103,6 @@ public class CadastroLivro extends JFrame implements ActionListener{
             }
         }
     }
-
 
 
 }

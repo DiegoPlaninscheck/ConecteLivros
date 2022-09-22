@@ -21,7 +21,6 @@ public class Livro {
 
     public Livro() {
     }
-    ;
 
     public Livro(Autor autor, String titulo, Status status, int qntdPaginas, int ISBN) {
         this.autor = autor;
