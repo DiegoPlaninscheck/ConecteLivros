@@ -76,6 +76,7 @@ public class CadastroLivro extends JFrame implements ActionListener {
                     try {
                         livrosController.cadastrar(titulo, isbn, qtdPag, usuario);
                         JOptionPane.showMessageDialog(null, "Livro cadastrado com sucesso!");
+                        System.out.println(livrosController.selecionar(Integer.parseInt(isbn)));
                     } catch (Exception exception) {
                         throw new RuntimeException("Livro já cadastrado");
                     }

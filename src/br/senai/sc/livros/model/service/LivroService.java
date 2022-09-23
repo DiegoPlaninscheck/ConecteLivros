@@ -24,10 +24,6 @@ public class LivroService {
         return new LivroDAO().selecionar(isbn);
     }
 
-    public void atualizar(int isbn, Livro livroAtualizado) {
-        new LivroDAO().atualizar(isbn, livroAtualizado);
-    }
-
     public Collection<Livro> getAllLivros(){
         Pessoa usuario = Menu.getUsuario();
 
@@ -80,12 +76,10 @@ public class LivroService {
     }
 
     public void atualizarStatus(Livro livro, Status status){
-        livro.setStatus(status);
-        atualizar(livro.getISBN(), livro);
+        new LivroDAO().atualizarStatus(livro.getISBN(), status);
     }
 
     public void adicionarRevisor(Livro livro, Revisor revisor){
-        livro.setRevisor(revisor);
-        atualizar(livro.getISBN(), livro);
+        new LivroDAO().atualizarRevisor(livro.getISBN(), revisor);
     }
 }

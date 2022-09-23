@@ -25,6 +25,10 @@ public class LivrosController {
         new LivroService().inserir(Livro.cadastrar(titulo, Integer.parseInt(isbn), Integer.parseInt(qtdPag), (Autor)autor));
     }
 
+    public Livro selecionar(int isbn){
+        return new LivroService().selecionar(isbn);
+    }
+
     public Collection<Livro> getAllLivros(){
         return new LivroService().getAllLivros();
     };

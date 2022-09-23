@@ -3,6 +3,8 @@ package br.senai.sc.livros.model.dao;
 import br.senai.sc.livros.model.entities.*;
 import br.senai.sc.livros.model.factory.ConexaoFactory;
 import br.senai.sc.livros.model.factory.LivroFactory;
+import br.senai.sc.livros.model.factory.PessoaFactory;
+import br.senai.sc.livros.model.factory.StatusFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,64 +67,88 @@ public class LivroDAO {
                     resultSet.getString("titulo"),
                     resultSet.getInt("status"),
                     resultSet.getInt("qtdPaginas"),
-                    resultSet.getInt("AUTOR_cpf"));
+                    resultSet.getString("AUTOR_cpf"));
         } catch (Exception e) {
             throw new RuntimeException("Erro ao extrair objeto");
         }
     }
 
-    public void atualizar(int isbn, Livro livroAtualizado) {
-        for (Livro livro : listaLivros) {
-            if (livro.getISBN() == isbn) {
-                listaLivros.remove(livro);
-                listaLivros.add(livroAtualizado);
+    public void atualizarStatus(int isbn, Status status) {
+        String sqlCommand = "update livros set status = " + status.ordinal() + "where isbn = " + isbn;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCommand)) {
+            try {
+                preparedStatement.execute();
+            } catch (Exception e) {
+                throw new RuntimeException("Erro na execução do comando SQL");
             }
-            ;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na preparação do comando SQL");
         }
+    }
 
-        List<Livro> lista = new ArrayList<>(listaLivros);
-        int i = lista.indexOf(selecionar(isbn));
-        lista.set(i, livroAtualizado);
-        listaLivros.clear();
-        listaLivros.addAll(lista);
+    public void atualizarRevisor(int isbn, Revisor revisor) {
+        String sqlCommand = "update livros set REVISOR_cpf = " + revisor.getCPF() + "where isbn = " + isbn;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCommand)) {
+            try {
+                preparedStatement.execute();
+            } catch (Exception e) {
+                throw new RuntimeException("Erro na execução do comando SQL");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na preparação do comando SQL");
+        }
     }
 
     public Collection<Livro> getAllLivros() {
-        return Collections.unmodifiableCollection(listaLivros);
-    }
-
-    ;
-
-    public Collection<Livro> selecionarPorAutor(Pessoa pessoa) {
-        Collection<Livro> livrosAutor = new ArrayList<>();
-        for (Livro livro : getAllLivros()) {
-            if (livro.getAutor().equals(pessoa)) {
-                livrosAutor.add(livro);
+        String sqlCommand = "select * from livros";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCommand)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet != null && resultSet.next()) {
+                    Livro livro = new Livro(
+                            (Autor) new PessoaDAO().selecionarPorCPF(resultSet.getString("AUTOR_cpf")),
+                            resultSet.getString("titulo"),
+                            new StatusFactory().getStatus(),
+                            resultSet.getInt("qtdPaginas"),
+                            resultSet.getInt("isbn"));
+                    listaLivros.add(livro);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Erro na execução do comando SQL");
             }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro na preparação do comando SQL");
         }
-        return livrosAutor;
+//        return Collections.unmodifiableCollection(listaLivros);
     }
 
-    public Collection<Livro> selecionarPorStatus(Status status) {
-        Collection<Livro> livrosStatus = new ArrayList<>();
-        for (Livro livro : getAllLivros()) {
-            if (livro.getStatus().equals(status)) {
-                livrosStatus.add(livro);
-            }
-        }
-        return livrosStatus;
-    }
+//    public Collection<Livro> selecionarPorAutor(Pessoa pessoa) {
+//        Collection<Livro> livrosAutor = new ArrayList<>();
+//        for (Livro livro : getAllLivros()) {
+//            if (livro.getAutor().equals(pessoa)) {
+//                livrosAutor.add(livro);
+//            }
+//        }
+//        return livrosAutor;
+//    }
 
-    public Collection<Livro> selecionarAtividadesAutor(Pessoa pessoa) {
-        Collection<Livro> livrosAutor = new ArrayList<>();
-        for (Livro livro : getAllLivros()) {
-            if (livro.getAutor() == pessoa && livro.getStatus().equals(Status.AGUARDANDO_EDICAO)) {
-                livrosAutor.add(livro);
-            }
-            ;
-        }
-        return livrosAutor;
-    }
-
-
+//    public Collection<Livro> selecionarPorStatus(Status status) {
+//        Collection<Livro> livrosStatus = new ArrayList<>();
+//        for (Livro livro : getAllLivros()) {
+//            if (livro.getStatus().equals(status)) {
+//                livrosStatus.add(livro);
+//            }
+//        }
+//        return livrosStatus;
+//    }
+//
+//    public Collection<Livro> selecionarAtividadesAutor(Pessoa pessoa) {
+//        Collection<Livro> livrosAutor = new ArrayList<>();
+//        for (Livro livro : getAllLivros()) {
+//            if (livro.getAutor() == pessoa && livro.getStatus().equals(Status.AGUARDANDO_EDICAO)) {
+//                livrosAutor.add(livro);
+//            }
+//            ;
+//        }
+//        return livrosAutor;
+//    }
 }
